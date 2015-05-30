@@ -1,88 +1,140 @@
+/*
+ * Nintendo Tetris AI
+ * Copyright (C) 2014 meatfighter.com
+ *
+ * This file is part of Nintendo Tetris AI. 
+ *
+ * Nintendo Tetris AI is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Nintendo Tetris AI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package sistemasInteligentes.ai;
 
 import java.util.ArrayList;
-
 import tetris.ai.*;
-import tetris.gui.WellFilter;
 
 public class SIAI {
-	public ArrayList<State> estadosPosibles;
-	public static final int PLAYFIELD_WIDTH = 10;
-	public static final int PLAYFIELD_HEIGHT = 20;
-	public static final int TETRIMINOS_SEARCHED = 3;
-	private State[][][] states;
-	private IChildFilter positionValidator;
-	
-	public SIAI() {
-		estadosPosibles = new ArrayList<State>();
-		this.positionValidator = new WellFilter();
-	}
-	
-	public void construirEstadosPosibles(int [][] playfield, int tetrimino){
-		
-	}
-	
-	public State getNextState(int [][] playfield, int [] tetriminos){
-		int tipoTetrimino = tetriminos[0];
-                ArrayList<State> estados = new ArrayList<State>();
-                estados = searchStates(playfield, tipoTetrimino);
-		int numeroRotaciones= Tetriminos.ORIENTATIONS[tipoTetrimino].length - 1;
-		//System.out.println("tiopoTetrimino"+tipoTetrimino+"\nnumeroRotaciones: "+numeroRotaciones);
-		//construirEstadosPosibles(playfield, tetriminos[0]);
-		createStates();
-		System.out.println(printStates());
-		System.out.println(states.length);
-		State estado = new State(0,18,1);
-		System.out.println(positionValidator.validate(playfield, tipoTetrimino, 0, 1, 1));
-		return estado;
-	}
-        
-        public ArrayList<State> searchStates(int [][] playfield, int tipoTetrimino){
-            for(int i =0; i<20; i++){
-                for(int j=0; j<10;j++){
-                    
-                }
-            }
-            return null;
-        }
-	
-	private void createStates() {
-	    states = new State[AI.PLAYFIELD_HEIGHT][AI.PLAYFIELD_WIDTH][4];
-	    for(int y = 0; y < AI.PLAYFIELD_HEIGHT; y++) {
-	      for(int x = 0; x < AI.PLAYFIELD_WIDTH; x++) {        
-	        for(int rotation = 0; rotation < 4; rotation++) { 
-	          states[y][x][rotation] = new State(x, y, rotation);
-	        }
-	      }
-	    }
-	}
-	
-	public State[] buildStatesList(State state) {
-	    State s = state;
-	    int count = 0;      
-	    while(s != null) {
-	      count++;
-	      s = s.predecessor;
-	    }
-	    State[] states = new State[count];
-	    while(state != null) {
-	      states[--count] = state;
-	      state = state.predecessor;
-	    }
-	    return states;
-	  }
-	
-	public String printStates(){
-		String s = "Estados\n";
-		if(states!= null){
-			for (int i = 0; i < states.length; i++) {
-				for (int j = 0; j < states[i].length; j++) {
-					for (int j2 = 0; j2 < states[i][j].length; j2++) {
-						s+=states[i][j][j2].toString()+"\n";
-					}
-				}
-			}
-		}
-		return s;
-	}
+
+  public static final int PLAYFIELD_WIDTH = 10;
+  public static final int PLAYFIELD_HEIGHT = 20;
+  public static final int TETRIMINOS_SEARCHED = 3;  
+  
+  private static final double[] WEIGHTS = {
+    1.0,
+    12.885008263218383,
+    15.842707182438396,
+    26.89449650779595,
+    27.616914062397015,
+    30.18511071927904,
+  };  
+  
+  private Searcher[] searchers; 
+  private int[] tetriminoIndices;
+  private PlayfieldUtil playfieldUtil = new PlayfieldUtil();
+  private PlayfieldEvaluation e = new PlayfieldEvaluation();
+  private int totalRows;
+  private int totalDropHeight;  
+  private double bestFitness;
+  private State bestResult;
+  private State result0;
+  
+  //Array Donde se almacenaran los estados posibles
+  public ArrayList<State> estadosValidos = new ArrayList<State>();
+  
+  private ISearchListener searchListener = new ISearchListener() {
+    @Override
+    public void handleResult(
+        int[][] playfield, int tetriminoType, int id, State state) {
+      
+      if (id == 0) {
+          estadosValidos.add(state);
+        //result0 = state;
+      }
+
+//      Orientation orientation 
+//          = Tetriminos.ORIENTATIONS[tetriminoType][state.rotation];
+//      int rows = playfieldUtil.clearRows(playfield, state.y);
+//      int originalTotalRows = totalRows;
+//      int originalTotalDropHeight = totalDropHeight;
+//      totalRows += rows;
+//      totalDropHeight += orientation.maxY - state.y;
+//
+//      int nextID = id + 1;
+//
+//      if (nextID == tetriminoIndices.length) {
+//
+//        playfieldUtil.evaluatePlayfield(playfield, e);
+//
+//        double fitness = computeFitness();
+//        if (fitness < bestFitness) {
+//          bestFitness = fitness;
+//          bestResult = result0;
+//        }
+//      } else {
+//        searchers[nextID].search(playfield, tetriminoIndices[nextID], nextID);
+//      }
+//
+//      totalDropHeight = originalTotalDropHeight;
+//      totalRows = originalTotalRows;
+//      playfieldUtil.restoreRows(playfield, rows);
+    }
+  };
+  
+  public ArrayList<State>getEstadosValidos(){
+      return  estadosValidos;
+  }
+  
+  public SIAI() {
+    this(null);
+  }
+  
+  public SIAI(IChildFilter positionValidator) {
+    searchers = new Searcher[AI.TETRIMINOS_SEARCHED];
+    for(int i = 0; i < AI.TETRIMINOS_SEARCHED; i++) {
+      searchers[i] = new Searcher(searchListener, positionValidator);
+    }
+  }
+  
+  private double computeFitness() {
+    return WEIGHTS[0] * totalRows
+         + WEIGHTS[1] * totalDropHeight
+         + WEIGHTS[2] * e.wells
+         + WEIGHTS[3] * e.holes                 
+         + WEIGHTS[4] * e.columnTransitions
+         + WEIGHTS[5] * e.rowTransitions;         
+  }
+  
+  public ArrayList<State> search(int[][] playfield, int[] tetriminoIndices) {
+    this.tetriminoIndices = tetriminoIndices;
+//    bestResult = null;
+//    bestFitness = Double.MAX_VALUE;
+    searchers[0].search(playfield, tetriminoIndices[0], 0);
+    return estadosValidos;
+  }  
+  
+  public State[] buildStatesList(State state) {
+    State s = state;
+    int count = 0;      
+    while(s != null) {
+      count++;
+      s = s.predecessor;
+    }
+    State[] states = new State[count];
+    while(state != null) {
+      states[--count] = state;
+      state = state.predecessor;
+    }
+    return states;
+  }
 }

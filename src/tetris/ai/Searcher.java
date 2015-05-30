@@ -5,7 +5,7 @@ public class Searcher {
   private static int globalMark = 1;
   
   private State[][][] states;
-  private Queue queue = new Queue();
+  public Queue queue = new Queue();
   private ISearchListener searchListener;
   private IChildFilter positionValidator;
   
@@ -62,6 +62,7 @@ public class Searcher {
 
     State childNode = states[y][x][rotation];
     if (childNode.visited == mark) {
+        //System.out.println("Estado: "+id3+++childNode.toString());
       return true;
     }
 
@@ -77,6 +78,7 @@ public class Searcher {
     
     if (positionValidator != null && !positionValidator.validate(
         playfield, tetriminoType, x, y, rotation)) {
+        //System.out.println("estado: "+id3+++tetriminoType+" x:"+x+" y:"+y+" Rotation:"+rotation);
       return true;
     }
 
@@ -84,15 +86,18 @@ public class Searcher {
     childNode.predecessor = state;
         
     queue.enqueue(childNode);   
+    //System.out.println("Estado: "+id3+++childNode.toString());
     return true; 
   }  
-  
+  int id3 =0;
   public boolean search(int[][] playfield, int tetriminoType, int id) {
 
     int maxRotation = Tetriminos.ORIENTATIONS[tetriminoType].length - 1;
 
     int mark = globalMark++;
 
+    //Linea que decide si ya esta lleno el tetris dado que intenta lanzar el 
+    //tetrimino en el tope del playfield.
     if (!addChild(playfield, tetriminoType, mark, null, 5, 0, 0)) {
       return false;
     }    

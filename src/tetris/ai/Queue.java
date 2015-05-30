@@ -36,4 +36,18 @@ public class Queue {
   public boolean isNotEmpty() { 
     return head != null;
   }  
+  
+  public String toString(){
+      String s = "Estados de la Cola\n";
+      if(head == null){
+          return s+"Cola Vacia";
+      }
+      State cur = head;
+      s+=cur.toString();
+      while (cur.next !=  null){
+            cur = cur.next;
+            s+=cur.toString();
+      }
+      return s;
+  }
 }

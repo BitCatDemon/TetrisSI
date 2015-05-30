@@ -18,7 +18,7 @@ public class State {
 	  String t = "Estado: ";
 	  t+="x:"+x+" y:"+y+" rotation:"+rotation+" visited:"+visited;
 	  //if(predecessor != null){ t+="\npredecessor:"+predecessor.toString();}
-	  if(next != null){t+="next"+next.toString()+"\n";}
+	  if(next != null){t+="next"+next.toString();}
 	  return t;
   }
 }
