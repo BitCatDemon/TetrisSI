@@ -4,14 +4,13 @@ import java.awt.EventQueue;
 import java.util.ArrayList;
 import sistemasInteligentes.ai.SIAI;
 
-import sistemasInteligentes.ai.SIAIJuan;
 import tetris.ai.AI;
 import tetris.ai.PlayfieldUtil;
-import tetris.ai.State;
 import tetris.gui.ImageLoader;
 import tetris.gui.Images;
 import tetris.gui.Randomizer;
 import tetris.gui.TetrisFrame;
+import java.util.Random;
 
 public class TetrisSI extends Thread {
 
@@ -28,6 +27,7 @@ public class TetrisSI extends Thread {
     int stepCount;
     boolean play;
     PlayFieldEvaluator pfe;
+    Random rnd = new Random();
 
     @Override
     public void run() {
@@ -131,16 +131,17 @@ public class TetrisSI extends Thread {
     public int step() {
         stepCount++;
         //Probando cuantos estados me dan con una O
-        tetriminos[0] = 3;
-        tetriminos[1] = 0;
-        tetriminos[2] = 0;
+//        tetriminos[0] = 3;
+//        tetriminos[1] = 0;
+//        tetriminos[2] = 0;
         ArrayList<tetris.ai.State> estadosValidos = ai.search(playfield, tetriminos);
         System.out.println("EstadosValidos: " + estadosValidos.size());
-        for (int i = 0; i < estadosValidos.size(); i++) {
-            System.out.println("Estado: "+i+" "+estadosValidos.get(i));
-        }
+//        for (int i = 0; i < estadosValidos.size(); i++) {
+//            System.out.println("Estado: "+i+" "+estadosValidos.get(i));
+//        }
         //tetris.ai.State state = ai.search(playfield, tetriminos);
-        tetris.ai.State state = new tetris.ai.State(5, 15, 0);
+        tetris.ai.State state = estadosValidos.get(rnd.nextInt(estadosValidos.size())-1);
+        //tetris.ai.State state = new tetris.ai.State(5, 15, 0);
         //No se ejecuta por que estamos en PLAY_FAST
         if (!PLAY_FAST) {
             tetris.ai.State[] states = ai.buildStatesList(state);

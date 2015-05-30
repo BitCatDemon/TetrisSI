@@ -116,6 +116,7 @@ public class SIAI {
   }
   
   public ArrayList<State> search(int[][] playfield, int[] tetriminoIndices) {
+      estadosValidos = new ArrayList<State>();
     this.tetriminoIndices = tetriminoIndices;
 //    bestResult = null;
 //    bestFitness = Double.MAX_VALUE;
