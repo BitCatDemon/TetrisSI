@@ -33,10 +33,16 @@ public class TetrisSI extends Thread {
     public void run() {
         while (true) {
             while (getOrSetGameStatus(null)) {
-                step();
+                if (step() == -1){
+                    System.out.println("Termino el juego");
+                    getOrSetGameStatus(movimiento.stop);
+                }
             }
             if (mvnt == movimiento.step) {
-                step();
+                if (step() == -1){
+                    System.out.println("Termino el juego");
+                    getOrSetGameStatus(movimiento.stop);
+                }
                 getOrSetGameStatus(movimiento.still);
             }
             if (mvnt == movimiento.stop) {
@@ -140,7 +146,10 @@ public class TetrisSI extends Thread {
 //            System.out.println("Estado: "+i+" "+estadosValidos.get(i));
 //        }
         //tetris.ai.State state = ai.search(playfield, tetriminos);
-        tetris.ai.State state = estadosValidos.get(rnd.nextInt(estadosValidos.size())-1);
+        if(estadosValidos.size()==0){
+            return -1;
+        }
+        tetris.ai.State state = estadosValidos.get(rnd.nextInt(estadosValidos.size()));
         //tetris.ai.State state = new tetris.ai.State(5, 15, 0);
         //No se ejecuta por que estamos en PLAY_FAST
         if (!PLAY_FAST) {

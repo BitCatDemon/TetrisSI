@@ -1,0 +1,14 @@
+build/built-jar.properties
+build/classes/sistemasInteligentes/ai/SIAI$1.class
+build/classes/sistemasInteligentes/ai/SIAI.class
+build/classes/sistemasInteligentes/ai/SIAIJuan.class
+build/classes/sistemasInteligentes/TetrisSI$1.class
+build/classes/sistemasInteligentes/TetrisSI$2.class
+build/classes/sistemasInteligentes/TetrisSI$movimiento.class
+build/classes/sistemasInteligentes/TetrisSI.class
+build/classes/sistemasInteligentes/TetrisTest.form
+build/classes/tetris/ai/Queue.class
+build/classes/tetris/ai/Searcher.class
+build/classes/tetris/ai/State.class
+nbproject/private/private.xml
+nbproject/project.properties
