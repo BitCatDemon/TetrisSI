@@ -2,15 +2,15 @@ package sistemasInteligentes;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;
-import sistemasInteligentes.ai.SIAI;
+import java.util.Random;
 
+import sistemasInteligentes.ai.SIAI;
 import tetris.ai.AI;
 import tetris.ai.PlayfieldUtil;
 import tetris.gui.ImageLoader;
 import tetris.gui.Images;
 import tetris.gui.Randomizer;
 import tetris.gui.TetrisFrame;
-import java.util.Random;
 
 public class TetrisSI extends Thread {
 
@@ -74,7 +74,7 @@ public class TetrisSI extends Thread {
         playfieldUtil = new PlayfieldUtil();
         tetriminos = new int[AI.TETRIMINOS_SEARCHED];
         playfield = playfieldUtil.createPlayfield();
-        randomizer.setInitialTetriminoTypes(tetriminos);
+        sistemasInteligentes.ai.Randomizer.setInitialTetriminoTypes(tetriminos);
         updateTetrisSI();
         getOrSetGameStatus(movimiento.still);
         pfe = new PlayFieldEvaluator(playfield);
@@ -85,7 +85,6 @@ public class TetrisSI extends Thread {
         try {
             getOrSetGameStatus(movimiento.play);
         } catch (Throwable e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -94,19 +93,12 @@ public class TetrisSI extends Thread {
         try {
             getOrSetGameStatus(movimiento.step);
         } catch (Throwable e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    public void play() throws Throwable {
-		// while (play) {
-        // step();
-        // }
-    }
 
     public void stopGame() {
-        // play = false;
         getOrSetGameStatus(movimiento.stop);
     }
 
@@ -163,7 +155,7 @@ public class TetrisSI extends Thread {
 
         tetrisFrame.lockTetrimino(tetriminos[0], state.rotation, state.x, state.y, !PLAY_FAST);
         playfieldUtil.lockTetrimino(playfield, tetriminos[0], state);
-        randomizer.setNextTetriminoType(tetriminos);
+        sistemasInteligentes.ai.Randomizer.setNextTetriminoType(tetriminos);
         updateTetrisSI();
         System.out.println("Altura Maxima: " + pfe.alturaMax() + "\n");
         return stepCount;

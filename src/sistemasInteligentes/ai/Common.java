@@ -10,7 +10,7 @@ private int MAX_T;
 		this.MAX_T= maxT;
 	}
 
-	public boolean areAllDone() {
+	public synchronized boolean areAllDone() {
 		return allDone;
 	}
 
@@ -28,6 +28,7 @@ private int MAX_T;
 
 	public void restart() {
 		doneThreads = 0;
+		allDone = false;
 	}
 
 }
