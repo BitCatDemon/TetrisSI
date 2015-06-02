@@ -17,7 +17,6 @@ public class PlayFieldEvaluator {
     }
     
     public int alturaMax(){
-        int max = 0;
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 if(currentPF[i][j]>0) return 20-i;
