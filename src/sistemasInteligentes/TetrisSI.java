@@ -160,30 +160,7 @@ public class TetrisSI extends Thread {
         System.out.println("Altura Maxima: " + pfe.alturaMax() + "\n");
         return stepCount;
     }
-
-//	public int step2() {
-//		// updateTetrisSI();
-//
-//		stepCount++;
-//		tetris.ai.State state = ai.search(playfield, tetriminos);
-//		System.out.println(state.toString());
-//		if (state == null) {return -1;}
-//		tetrisFrame.updateStatisticsAndNext(tetriminos[0], tetriminos[1]);
-//		if (!PLAY_FAST) {
-//			tetris.ai.State[] states = ai.buildStatesList(state);
-//			for (int i = 0; i < states.length; i++) {
-//				state = states[i];
-//				tetrisFrame.displayTetrimino(tetriminos[0], state.rotation,
-//						state.x, state.y, 1);
-//			}
-//		}
-//		tetrisFrame.lockTetrimino(tetriminos[0], state.rotation, state.x,
-//				state.y, !PLAY_FAST);
-//		playfieldUtil.lockTetrimino(playfield, tetriminos[0], state);
-//		randomizer.setNextTetriminoType(tetriminos);
-//		updateTetrisSI();
-//		return stepCount;
-//	}
+    
     public void finalJuego() {
         while (true) {
             tetrisFrame.updateStatisticsAndNext(tetriminos[0], tetriminos[1]);

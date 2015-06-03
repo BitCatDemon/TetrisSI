@@ -1,6 +1,7 @@
 package sistemasInteligentes.ai;
 
 import java.util.ArrayList;
+import sistemasInteligentes.SingleExperiment;
 
 public class Central extends Thread {
 	ArrayList<Chromosome> players;
@@ -9,6 +10,7 @@ public class Central extends Thread {
 	public int[] tetriminos;
 	private static Central central;
 	Common common;
+        SingleExperiment experimento;
 
 	private Central() {
 		players = new ArrayList<>(MAX_T);
@@ -41,17 +43,35 @@ public class Central extends Thread {
 		int current_generations = 0;
 		while (current_generations < MAX_G) {
 			if (common.areAllDone()) {
-				// Realizar selección.
+				// Realizar selecciï¿½n.
 
 				// Realizar cruce.
 
-				// Realizar mutación.
+				// Realizar mutaciï¿½n.
 
-				// Correr la nueva toda la población.
+				// Correr la nueva toda la poblaciï¿½n.
 				common.restart();
 				this.runThreads();
 			}
 		}
 	}
-
+        
+        
+        /**
+        * Metodos para la interfaz grafica de Genetris
+        **/
+        
+        public void botonPlay (){
+            
+        }
+        public void botonStep (){
+            
+        }
+        public void botonStop (){
+            
+        }
+        public void botonExperimentoSimple (){
+            experimento = new SingleExperiment();
+            Gene gen = new Gene();
+        }
 }

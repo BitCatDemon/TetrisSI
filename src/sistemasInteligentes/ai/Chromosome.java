@@ -45,7 +45,7 @@ public class Chromosome extends Thread {
 			// Juega hasta que pierde o alcanza el max de movimientos
 			estadosValidos = ai.search(pfe.currentPF, tetriminos);
 			hasLost = estadosValidos.size() == 0;
-			// busca el mejor estado según su fnción fitness
+			// busca el mejor estado segï¿½n su fnciï¿½n fitness
 			tetris.ai.State state = estadosValidos.get(rnd
 					.nextInt(estadosValidos.size()));
 
