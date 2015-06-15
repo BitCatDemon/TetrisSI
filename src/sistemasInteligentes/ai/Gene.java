@@ -3,6 +3,7 @@ package sistemasInteligentes.ai;
 public class Gene {
 
 	public double[] genes;
+	public final static int numberOfGenes=7;
 
 	public static enum geneID {
 		HEIGHT, CLEARS, HOLES, BLOCK, WALLS, FLOOR, PARTNER;
@@ -12,7 +13,7 @@ public class Gene {
 			WALLS = 4, FLOOR = 5, PARTNER = 6;
 
 	public Gene(Randomizer randomizer) {
-		genes = new double[7];
+		genes = new double[numberOfGenes];
 		for (int i = 0; i < genes.length; i++) {
 			genes[i] = randomizer.getRndGeneValue();
 		}

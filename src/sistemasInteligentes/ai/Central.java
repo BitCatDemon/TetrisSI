@@ -3,6 +3,7 @@ package sistemasInteligentes.ai;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 import sistemasInteligentes.SingleExperiment;
 
@@ -10,9 +11,11 @@ public class Central extends Thread {
 	ArrayList<Chromosome> players;
 	final int MAX_T = 3;
 	final int MAX_G = 1;
+	final int selection_percentage = 20, mutation_percentage = 30;
 	private static Central central;
 	Common common;
 	SingleExperiment experimento;
+	private Random random = new Random();
 
 	public static void main(String[] args) {
 		Central c = Central.getInstance();
@@ -43,74 +46,118 @@ public class Central extends Thread {
 			players.get(i).start();
 		}
 	}
-	
-	public void go(){
-		this.runThreads();
-		int current_generations = 0;
-		while (current_generations++ < MAX_G) {
-			if (common.areAllDone()) {
-				System.out.println("I N I T I A L +++++++++++++");
-				for (Chromosome cr : players) {
-					System.out.println(cr.getScore());
-				}
-				Collections.sort(players, new CustomComparator());
-				System.out.println("S O R T E D   S O R T E D ");
-				for (Chromosome cr : players) {
-					System.out.println(cr.getScore());
-				}
-				/*
-				 * Realizar selección--> Va a pasar un 20% de la población
-				 * compuesto por los mejores de la población. Los otros 17 se
-				 * eligen al azar y se hace
-				 */
-
-				// Realizar cruce.
-
-				// Realizar mutaciï¿½n.
-
-				// Correr la nueva toda la poblaciï¿½n.
-//				common.restart();
-//				this.runThreads();
-			}
-		}
-	}
 
 	@Override
 	public void run() {
 		this.runThreads();
 		int current_generations = 0;
+		int[] res_selection;
 		while (current_generations < MAX_G) {
 			if (common.areAllDone()) {
-				System.out.println("I N I T I A L +++++++++++++");
-				for (Chromosome cr : players) {
-					System.out.println(cr.getScore());
-				}
 				Collections.sort(players, new CustomComparator());
-				System.out.println("S O R T E D   S O R T E D ");
-				for (Chromosome cr : players) {
-					System.out.println(cr.getScore());
-				}
-				/*
-				 * Realizar selección--> Va a pasar un 20% de la población
-				 * compuesto por los mejores de la población. Los otros 17 se
-				 * eligen al azar y se hace
-				 */
-
-				// Realizar cruce.
-
-				// Realizar mutaciï¿½n.
-
-				// Correr la nueva toda la poblaciï¿½n.
-//				common.restart();
-//				this.runThreads();
+				res_selection = selection(players);
+				players = crossover(res_selection);
+				mutation(players);
+				common.restart();
+				this.runThreads();
 				current_generations++;
 			}
 		}
 	}
 
-	private ArrayList<Chromosome> makeSelection(ArrayList<Chromosome> current) {
+	/**
+	 * Se selecciona un 20% de la población que corresponde a los mejores. de
+	 * resto se eligen parejas al azar y se aplica torneo entre scores
+	 * obtenidas. Se retorna un arreglo de enteros con las posiciones en el
+	 * ArrayList de los cromosomas seleccionados.
+	 * 
+	 * @param players
+	 * @return ids
+	 */
+	private int[] selection(ArrayList<Chromosome> current) {
+		int[] ids = new int[MAX_T];
+		int firstSelected = (MAX_T * selection_percentage) / 100;
+		for (int i = 0; i < firstSelected; i++) {
+			ids[i] = i;
+		}
+		int p1, p2;
+		for (int i = firstSelected; i < MAX_T; i++) {
+
+			p1 = random.nextInt(MAX_T);
+			p2 = random.nextInt(MAX_T);
+
+			while (p1 == p2) {
+				p2 = random.nextInt(MAX_T);
+			}
+			ids[i] = current.get(p1).getScore() >= current.get(p2).getScore() ? p1
+					: p2;
+		}
+		return ids;
+	}
+
+	/**
+	 * 
+	 * Se seleccionan al azar dos cromosomas diferentes, de los cuales se
+	 * obtendrán los genes de la cría que surgirá.
+	 * 
+	 * @param ids
+	 * @return new players
+	 */
+	private ArrayList<Chromosome> crossover(int[] ids) {
 		ArrayList<Chromosome> copy = new ArrayList<>(MAX_T);
-		return null;
+		int numberOfGenes = Gene.numberOfGenes;
+		int ind_mut, p1, p2;
+		Chromosome cr;
+		for (int i = 0; i < MAX_T; i++) {
+			p1 = random.nextInt(MAX_T);
+			p2 = random.nextInt(MAX_T);
+			ind_mut = random.nextInt(numberOfGenes);
+			while (p1 == p2) {
+				p2 = random.nextInt(MAX_T);
+			}
+
+			cr = new Chromosome(common);
+			copyGenes(cr.genes.genes, players.get(ids[p1]).genes.genes, 0,
+					ind_mut);
+			copyGenes(cr.genes.genes, players.get(ids[p2]).genes.genes,
+					ind_mut, numberOfGenes);
+			copy.add(cr);
+		}
+		return copy;
+	}
+
+	/**
+	 * Se muta un 30% de la población de cromosomas seleccionados.
+	 * 
+	 * @param current
+	 */
+	private void mutation(ArrayList<Chromosome> current) {
+		int numberOfGenes = Gene.numberOfGenes;
+		int numMutated = (MAX_T * mutation_percentage) / 100;
+		int numGenesMutated;
+		int prev, cur = random.nextInt(MAX_T), gene;
+		Chromosome cr;
+		for (int i = 0; i < numMutated; i++) {
+			numGenesMutated = random.nextInt(numberOfGenes);
+			cr = current.get(cur);
+			for (int j = 0; j < numGenesMutated; j++) {
+				gene = random.nextInt(numberOfGenes);
+				cr.genes.genes[gene] += random.nextDouble() / 10;
+			}
+			prev = cur;
+			while (prev == cur) {
+				cur = random.nextInt(MAX_T);
+			}
+		}
+	}
+
+	public void copyGenes(double[] destiny, double[] source, int begin, int end) {
+		if (begin > end && destiny != null && source != null) {
+			return;
+		}
+		for (int i = begin; i < end; i++) {
+			destiny[i] = source[i];
+		}
 	}
 
 	public class CustomComparator implements Comparator<Chromosome> {
