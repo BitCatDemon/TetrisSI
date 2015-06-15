@@ -1,57 +1,88 @@
 package sistemasInteligentes.ai;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import sistemasInteligentes.PlayFieldEvaluator;
 
 public class Chromosome extends Thread {
-	private int id;
 	public Gene genes;
-	protected PlayFieldEvaluator pfe;
-	protected int[] tetriminos;
+	public PlayFieldEvaluator pfe;
+	public int[] tetriminos;
 	public boolean hasLost = false;
-	private int maxMoves = 20;
-	String parentsTrack = "";
-	SIAI ai;
+	private int maxMoves = 75;
+	public SIAI ai;
 	Common common;
+	private int score = 0;
+	Randomizer randomizer;
 
-	public Chromosome(int id, int[] tetriminos, Common common) {
-		this.id = id;
-		this.genes = new Gene();
-		this.tetriminos = tetriminos;
+	public Chromosome(Common common) {
+		this.randomizer = new Randomizer();
+		this.genes = new Gene(randomizer);
+		this.tetriminos = new int[3];
+		randomizer.setInitialTetriminoTypes(tetriminos);
 		this.common = common;
-		pfe = new PlayFieldEvaluator();
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
+		pfe = new PlayFieldEvaluator(common.getInitialPlayfield());
+		ai = new SIAI();
+		ai.setGenes(this.genes.getGenes());
 	}
 
 	public int getMaxMoves() {
 		return maxMoves;
 	}
 
+	public void makeAMutation() {
+		for (int i = 0; i < genes.genes.length; i++) {
+			genes.genes[i] = randomizer.getRndGeneValue();
+		}
+	}
+
+	public void setNextTetriminoType() {
+		randomizer.setNextTetriminoType(tetriminos);
+	}
+
 	@Override
 	public void run() {
-		int m = -1;
-		ArrayList<tetris.ai.State> estadosValidos;
-		Random rnd = new Random();
-		while (++m < maxMoves || !hasLost) {
-			// Juega hasta que pierde o alcanza el max de movimientos
-			estadosValidos = ai.search(pfe.currentPF, tetriminos);
-			hasLost = estadosValidos.size() == 0;
-			// busca el mejor estado seg�n su fnci�n fitness
-			tetris.ai.State state = estadosValidos.get(rnd
-					.nextInt(estadosValidos.size()));
+		common.imReady();
+		int m = 0;
+		tetris.ai.State selected;
+		while (m++ < maxMoves) {
+			selected = ai.search(pfe.currentPF.clone(), tetriminos);
+			if (selected == null) {
+				break;
+			}
+			ai.playfieldUtil.lockTetrimino(pfe.currentPF, tetriminos[0],
+					selected);
+			updateScore();
 
+			randomizer.setNextTetriminoType(tetriminos);
 		}
-		//
 		common.imDone();
 
 	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void updateScore() {
+		int clears = ai.playfieldUtil.cleared;
+		switch (clears) {
+		case 1:
+			score += 40;
+			break;
+		case 2:
+			score += 100;
+			break;
+		case 3:
+			score += 300;
+		case 4:
+			score += 1200;
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void setScore(int score) {
+		this.score = score;
+	}
+
 }

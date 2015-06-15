@@ -21,21 +21,12 @@
 
 package sistemasInteligentes;
 
-import tetris.ai.*;
-import tetris.gui.ImageLoader;
-import tetris.gui.Images;
-import tetris.gui.Randomizer;
-import tetris.gui.TetrisFrame;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MainRun{
 	
 	public TetrisSI tetrisSI;
 
 	public static void main(String... args) throws Throwable {
-		new TetrisSI().launch();
+		new TetrisRunTest().launch();
 	}
 }

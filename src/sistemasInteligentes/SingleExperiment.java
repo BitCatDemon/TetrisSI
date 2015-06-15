@@ -2,6 +2,7 @@ package sistemasInteligentes;
 
 import sistemasInteligentes.TetrisSI;
 import sistemasInteligentes.ai.Gene;
+import sistemasInteligentes.ai.Randomizer;
 
 /**
  *
@@ -16,7 +17,7 @@ public class SingleExperiment {
     Gene gen;
     public SingleExperiment() {
         currentTetris = new TetrisSI();
-        gen = new Gene();
+        gen = new Gene(new Randomizer());
     }
     
     
