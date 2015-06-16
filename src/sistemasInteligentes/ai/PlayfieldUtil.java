@@ -51,7 +51,7 @@ public class PlayfieldUtil {
 		if (endRow >= AI.PLAYFIELD_HEIGHT) {
 			endRow = AI.PLAYFIELD_HEIGHT - 1;
 		}
-		cleared =0;
+		cleared = 0;
 		for (int y = startRow; y <= endRow; y++) {
 			if (playfield[y][AI.PLAYFIELD_WIDTH] == AI.PLAYFIELD_WIDTH) {
 				cleared++;
@@ -66,16 +66,19 @@ public class PlayfieldUtil {
 				playfield[0] = clearedRow;
 			}
 		}
-		
+
 	}
 
 	public void evaluatePlayfield(int[][] playfield,
 			PlayfieldEvaluationConstants e) {
-
+		e.height = 0;
 		for (int x = 0; x < AI.PLAYFIELD_WIDTH; x++) {
 			columnDepths[x] = AI.PLAYFIELD_HEIGHT - 1;
 			for (int y = 0; y < AI.PLAYFIELD_HEIGHT; y++) {
 				if (playfield[y][x] != Tetriminos.NONE) {
+					if (SIAI.PLAYFIELD_HEIGHT - y > e.height) {
+						e.height = SIAI.PLAYFIELD_HEIGHT - y;
+					}
 					columnDepths[x] = y;
 					break;
 				}
@@ -179,13 +182,17 @@ public class PlayfieldUtil {
 		spareRows[spareIndex] = playfield[0];
 
 		for (int i = 0; i < y; i++) {
-			playfield[i] = playfield[i + 1];
+			try {
+				playfield[i] = playfield[i + 1];
+			} catch (Exception e) {
+				System.out.println("Murió en i: " + i);
+			}
 		}
 		restoredRow[AI.PLAYFIELD_WIDTH] = AI.PLAYFIELD_WIDTH;
 		playfield[y] = restoredRow;
 	}
 
-	public void restoreRows(int[][] playfield, int rows) {
+	public synchronized void restoreRows(int[][] playfield, int rows) {
 		for (int i = 0; i < rows; i++) {
 			restoreRow(playfield);
 		}

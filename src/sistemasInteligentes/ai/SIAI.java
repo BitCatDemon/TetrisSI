@@ -50,9 +50,6 @@ public class SIAI {
 	private State result0;
 	private int cleared = 0;
 
-	// Array Donde se almacenaran los estados posibles
-	public ArrayList<State> estadosValidos = new ArrayList<State>();
-
 	private ISearchListener searchListener = new ISearchListener() {
 		@Override
 		public void handleResult(int[][] playfield, int tetriminoType, int id,
@@ -90,10 +87,6 @@ public class SIAI {
 		}
 	};
 
-	public ArrayList<State> getEstadosValidos() {
-		return estadosValidos;
-	}
-
 	public SIAI() {
 		this(null);
 	}
@@ -106,14 +99,13 @@ public class SIAI {
 	}
 
 	private double computeFitness() {
-		return cleared * genes[Gene.CLEARS] + totalDropHeight
+		return cleared * genes[Gene.CLEARS] + e.height
 				* genes[Gene.HEIGHT] + e.holes * genes[Gene.HOLES] + e.partners
 				+ e.blockades * genes[Gene.BLOCKADES] * genes[Gene.PARTNER]
 				+ e.walls * genes[Gene.WALLS] + e.floor * genes[Gene.FLOOR];
 	}
 
 	public State search(int[][] playfield, int[] tetriminoIndices) {
-		estadosValidos = new ArrayList<State>();
 		this.tetriminoIndices = tetriminoIndices;
 		bestResult = null;
 		bestFitness = Double.MAX_VALUE;

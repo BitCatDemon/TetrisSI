@@ -48,8 +48,12 @@ public class TetrisRunTest extends Thread {
 	public void launch() throws Throwable {
 		// Instancia las vistas graficas
 		createTetrisFrame(ImageLoader.loadImages());
-		cr = new Chromosome(Common.getInstance(1));
 
+		cr = new Chromosome(Common.getInstance(1));
+		double[] g = { 0.8055048951482614, -0.10427033869549562,
+				0.697357503906728, -0.7854499917428702, 0.06332468639500899,
+				-0.5668368119208642, -0.7214725522284853 };
+		cr.genes.setGenes(g);
 		// Instancias para la ejecucion del videojuego
 		stepCount = 0;
 		play = false;
@@ -106,11 +110,9 @@ public class TetrisRunTest extends Thread {
 
 	public int step() {
 		stepCount++;
-		tetris.ai.State state = cr.ai.search(cr.pfe.currentPF,
-				cr.tetriminos);
+		tetris.ai.State state = cr.ai.search(cr.pfe.currentPF, cr.tetriminos);
 		if (state == null) {
-			System.out.println("PERDIÓ \n \n"
-					+ "Score: " + cr.getScore());
+			System.out.println("PERDIÓ \n \n" + "Score: " + cr.getScore());
 			return -1;
 		}
 		tetrisFrame.lockTetrimino(cr.tetriminos[0], state.rotation, state.x,
@@ -122,8 +124,8 @@ public class TetrisRunTest extends Thread {
 		cr.setNextTetriminoType();
 
 		if (stepCount == 1000) {
-			System.out.println("Fin movimientos \n \n"
-					+ "Score: " + cr.getScore());
+			System.out.println("Fin movimientos \n \n" + "Score: "
+					+ cr.getScore());
 			return -1;
 		}
 		return stepCount;

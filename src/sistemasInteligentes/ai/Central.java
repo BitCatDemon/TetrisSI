@@ -9,17 +9,19 @@ import sistemasInteligentes.SingleExperiment;
 
 public class Central extends Thread {
 	ArrayList<Chromosome> players;
-	final int MAX_T = 3;
-	final int MAX_G = 1;
+	final int MAX_T = 15;
+	final int MAX_G = 5;
 	final int selection_percentage = 20, mutation_percentage = 30;
 	private static Central central;
+	boolean allStarted = false;
+	boolean stop4Starting = true;
 	Common common;
 	SingleExperiment experimento;
 	private Random random = new Random();
 
 	public static void main(String[] args) {
 		Central c = Central.getInstance();
-		c.start();
+		c.run();
 	}
 
 	private Central() {
@@ -43,26 +45,61 @@ public class Central extends Thread {
 
 	public void runThreads() {
 		for (int i = 0; i < MAX_T; i++) {
-			players.get(i).start();
+			try {
+				players.get(i).start();
+			} catch (Exception e) {
+				System.out.println("Se rompió " + i);
+			}
+
 		}
+		doneStarting();
 	}
 
+	public synchronized void doneStarting() {
+		allStarted = true;
+	}
+
+	public synchronized boolean areAllStarted() {
+		return allStarted;
+	}
+
+	boolean lastRound = false;
+	
+	public synchronized boolean lastRound() {
+		return lastRound;
+	}
 	@Override
 	public void run() {
-		this.runThreads();
 		int current_generations = 0;
 		int[] res_selection;
 		while (current_generations < MAX_G) {
-			if (common.areAllDone()) {
-				Collections.sort(players, new CustomComparator());
+			if (!allStarted) {
+				this.runThreads();
+			}
+
+			if (areAllStarted() && common.areAllDone()) {
+				Collections.sort(players, new ChromosomeComparator());
 				res_selection = selection(players);
 				players = crossover(res_selection);
 				mutation(players);
 				common.restart();
-				this.runThreads();
 				current_generations++;
+				allStarted = false;
+				lastRound = current_generations == MAX_G;
 			}
 		}
+		while (lastRound()) {
+			if (!allStarted) {
+				this.runThreads();
+				}
+			if (areAllStarted() && common.areAllDone()) {
+				Collections.sort(players, new ChromosomeComparator());
+				System.out.println(players.get(0).getScore());
+				System.out.println(players.get(0).genes.toString());
+				lastRound = false;
+			}
+		}
+		
 	}
 
 	/**
@@ -139,6 +176,9 @@ public class Central extends Thread {
 		Chromosome cr;
 		for (int i = 0; i < numMutated; i++) {
 			numGenesMutated = random.nextInt(numberOfGenes);
+			if (numGenesMutated == 0) {
+				numGenesMutated = 1;
+			}
 			cr = current.get(cur);
 			for (int j = 0; j < numGenesMutated; j++) {
 				gene = random.nextInt(numberOfGenes);
@@ -160,11 +200,12 @@ public class Central extends Thread {
 		}
 	}
 
-	public class CustomComparator implements Comparator<Chromosome> {
+	public class ChromosomeComparator implements Comparator<Chromosome> {
 		@Override
 		public int compare(Chromosome c1, Chromosome c2) {
-			return c1.getScore() >= c2.getScore() ? c1.getScore() : c2
-					.getScore();
+			// return c1.getScore() >= c2.getScore() ? c1.getScore() : c2
+			// .getScore();
+			return c2.getScore() - c1.getScore();
 		}
 	}
 

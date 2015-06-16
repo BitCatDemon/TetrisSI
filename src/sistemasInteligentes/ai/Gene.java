@@ -3,7 +3,7 @@ package sistemasInteligentes.ai;
 public class Gene {
 
 	public double[] genes;
-	public final static int numberOfGenes=7;
+	public final static int numberOfGenes = 7;
 
 	public static enum geneID {
 		HEIGHT, CLEARS, HOLES, BLOCK, WALLS, FLOOR, PARTNER;
@@ -34,13 +34,15 @@ public class Gene {
 
 	@Override
 	public String toString() {
-		System.out.println("HEIGHT" + ": " + genes[HEIGHT]);
-		System.out.println("CLEARS" + ": " + genes[CLEARS]);
-		System.out.println("HOLES" + ": " + genes[HOLES]);
-		System.out.println("BLOCKADES" + ": " + genes[BLOCKADES]);
-		System.out.println("WALLS" + ": " + genes[WALLS]);
-		System.out.println("PARTNER" + ": " + genes[PARTNER]);
-		System.out.println("FLOOR" + ": " + genes[FLOOR]);
-		return super.toString();
+//		System.out.println("HEIGHT" + ": " + genes[HEIGHT]);
+//		System.out.println("CLEARS" + ": " + genes[CLEARS]);
+//		System.out.println("HOLES" + ": " + genes[HOLES]);
+//		System.out.println("BLOCKADES" + ": " + genes[BLOCKADES]);
+//		System.out.println("WALLS" + ": " + genes[WALLS]);
+//		System.out.println("PARTNER" + ": " + genes[PARTNER]);
+//		System.out.println("FLOOR" + ": " + genes[FLOOR]);
+		String s = "{" + genes[0] + ", " + genes[1] + ", " + genes[2]
+				+ "," + genes[3] + "," + genes[4] + "," + genes[5] + "," +genes[6]+"}";
+		return s;
 	}
 }

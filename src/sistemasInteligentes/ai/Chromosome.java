@@ -19,7 +19,7 @@ public class Chromosome extends Thread {
 		this.tetriminos = new int[3];
 		randomizer.setInitialTetriminoTypes(tetriminos);
 		this.common = common;
-		pfe = new PlayFieldEvaluator(common.getInitialPlayfield());
+		pfe = new PlayFieldEvaluator();
 		ai = new SIAI();
 		ai.setGenes(this.genes.getGenes());
 	}
@@ -81,8 +81,10 @@ public class Chromosome extends Thread {
 		}
 	}
 
-	private void setScore(int score) {
-		this.score = score;
+	@Override
+	public String toString() {
+		return "Chromosome [score=" + score + "]";
 	}
+
 
 }

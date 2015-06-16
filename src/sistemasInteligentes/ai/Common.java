@@ -9,12 +9,12 @@ public class Common {
 
 	private Common(int maxT) {
 		this.MAX_T = maxT;
-		initialPlayField = PlayfieldUtil.createPlayfield();
+//		initialPlayField = PlayfieldUtil.createPlayfield();
 	}
 
-	public synchronized int[][] getInitialPlayfield() {
-		return initialPlayField.clone();
-	}
+//	public synchronized int[][] getInitialPlayfield() {
+//		return initialPlayField.clone();
+//	}
 
 	public synchronized boolean areAllDone() {
 		return allDone;

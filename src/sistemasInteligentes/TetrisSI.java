@@ -77,7 +77,7 @@ public class TetrisSI extends Thread {
 		sistemasInteligentes.ai.Randomizer.setInitialTetriminoTypes(tetriminos);
 		updateTetrisSI();
 		getOrSetGameStatus(movimiento.still);
-		pfe = new PlayFieldEvaluator(playfield);
+		pfe = new PlayFieldEvaluator();
 		run();
 	}
 

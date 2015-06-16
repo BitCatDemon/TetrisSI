@@ -1,7 +1,9 @@
 package sistemasInteligentes;
 
 import sistemasInteligentes.ai.SIAI;
+import tetris.ai.AI;
 import tetris.ai.PlayfieldUtil;
+import tetris.ai.Tetriminos;
 
 public class PlayFieldEvaluator {
 
@@ -12,9 +14,18 @@ public class PlayFieldEvaluator {
 
 	int maxY; // Representa la altura mas alta en el tablero;
 
+	public PlayFieldEvaluator() {
+		currentPF = createPlayfield();
+	}
 
-	public PlayFieldEvaluator(final int[][] playfield) {
-		currentPF = playfield;
+	private int[][] createPlayfield() {
+		int[][] playfield = new int[AI.PLAYFIELD_HEIGHT][AI.PLAYFIELD_WIDTH + 1];
+		for (int y = 0; y < AI.PLAYFIELD_HEIGHT; y++) {
+			for (int x = 0; x < AI.PLAYFIELD_WIDTH; x++) {
+				playfield[y][x] = Tetriminos.NONE;
+			}
+		}
+		return playfield;
 	}
 
 	public void updateCurrentPF(int[][] playfield) {
