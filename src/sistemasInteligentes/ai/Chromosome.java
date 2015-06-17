@@ -28,16 +28,6 @@ public class Chromosome extends Thread {
 		return maxMoves;
 	}
 
-	public void makeAMutation() {
-		for (int i = 0; i < genes.genes.length; i++) {
-			genes.genes[i] = randomizer.getRndGeneValue();
-		}
-	}
-
-	public void setNextTetriminoType() {
-		randomizer.setNextTetriminoType(tetriminos);
-	}
-
 	@Override
 	public void run() {
 		common.imReady();
@@ -56,6 +46,10 @@ public class Chromosome extends Thread {
 		}
 		common.imDone();
 
+	}
+
+	public void setNextTetriminoType() {
+		randomizer.setNextTetriminoType(tetriminos);
 	}
 
 	public int getScore() {
@@ -81,10 +75,17 @@ public class Chromosome extends Thread {
 		}
 	}
 
+	public void resetValues() {
+		randomizer.setInitialTetriminoTypes(tetriminos);
+		pfe = new PlayFieldEvaluator();
+		ai = new SIAI();
+		ai.setGenes(genes.genes);
+		score = 0;
+	}
+
 	@Override
 	public String toString() {
 		return "Chromosome [score=" + score + "]";
 	}
-
 
 }

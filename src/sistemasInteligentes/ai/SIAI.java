@@ -21,8 +21,6 @@
 
 package sistemasInteligentes.ai;
 
-import java.util.ArrayList;
-
 import sistemasInteligentes.PlayfieldEvaluationConstants;
 import tetris.ai.AI;
 import tetris.ai.IChildFilter;

@@ -3,8 +3,8 @@ package sistemasInteligentes;
 import java.awt.EventQueue;
 import java.util.Random;
 
+import sistemasInteligentes.ai.Central;
 import sistemasInteligentes.ai.Chromosome;
-import sistemasInteligentes.ai.Common;
 import tetris.gui.ImageLoader;
 import tetris.gui.Images;
 import tetris.gui.Randomizer;
@@ -15,6 +15,8 @@ public class TetrisRunTest extends Thread {
 	public static final boolean PLAY_FAST = true; // disables drop movements
 	private volatile TetrisFrame tetrisFrame;
 	Randomizer randomizer;
+
+	Central central = Central.getInstance();
 	Chromosome cr;
 
 	int stepCount;
@@ -22,8 +24,32 @@ public class TetrisRunTest extends Thread {
 	PlayFieldEvaluator pfe;
 	Random rnd = new Random();
 
+	public void playGod() {
+		while (central.isEvolving()) {
+			central.evolve();
+		}
+		
+	}
+
+	public void setFirstPlayer(Chromosome cr) {
+		this.cr = cr;
+	}
+
+	public void launch() throws Throwable {
+		createTetrisFrame(ImageLoader.loadImages());
+		playGod();
+		setFirstPlayer(central.getBest());
+
+		run();
+	}
+
 	@Override
 	public void run() {
+		cr.resetValues();
+		stepCount = 0;
+		play = false;
+		randomizer = new Randomizer();
+		getOrSetGameStatus(movimiento.play);
 		while (true) {
 			while (getOrSetGameStatus(null)) {
 				if (step() == -1) {
@@ -40,28 +66,9 @@ public class TetrisRunTest extends Thread {
 			}
 			if (mvnt == movimiento.stop) {
 
-				getOrSetGameStatus(movimiento.still);
+				break;
 			}
 		}
-	}
-
-	public void launch() throws Throwable {
-		// Instancia las vistas graficas
-		createTetrisFrame(ImageLoader.loadImages());
-
-		cr = new Chromosome(Common.getInstance(1));
-		double[] g = { 0.8055048951482614, -0.10427033869549562,
-				0.697357503906728, -0.7854499917428702, 0.06332468639500899,
-				-0.5668368119208642, -0.7214725522284853 };
-		cr.genes.setGenes(g);
-		// Instancias para la ejecucion del videojuego
-		stepCount = 0;
-		play = false;
-		randomizer = new Randomizer();
-		// ai = new Ka0tic();
-
-		getOrSetGameStatus(movimiento.play);
-		run();
 	}
 
 	public void b_play() {

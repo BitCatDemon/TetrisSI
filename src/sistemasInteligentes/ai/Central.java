@@ -7,21 +7,23 @@ import java.util.Random;
 
 import sistemasInteligentes.SingleExperiment;
 
-public class Central extends Thread {
+public class Central {
 	ArrayList<Chromosome> players;
 	final int MAX_T = 15;
-	final int MAX_G = 5;
+	final int MAX_G = 20;
 	final int selection_percentage = 20, mutation_percentage = 30;
 	private static Central central;
 	boolean allStarted = false;
 	boolean stop4Starting = true;
-	Common common;
-	SingleExperiment experimento;
+	private Common common;
 	private Random random = new Random();
+	private boolean isEvolving = true;
+	Chromosome best;
+	SingleExperiment experimento;
 
 	public static void main(String[] args) {
 		Central c = Central.getInstance();
-		c.run();
+		c.evolve();
 	}
 
 	private Central() {
@@ -64,12 +66,12 @@ public class Central extends Thread {
 	}
 
 	boolean lastRound = false;
-	
+
 	public synchronized boolean lastRound() {
 		return lastRound;
 	}
-	@Override
-	public void run() {
+
+	public Chromosome evolve() {
 		int current_generations = 0;
 		int[] res_selection;
 		while (current_generations < MAX_G) {
@@ -91,15 +93,30 @@ public class Central extends Thread {
 		while (lastRound()) {
 			if (!allStarted) {
 				this.runThreads();
-				}
+			}
 			if (areAllStarted() && common.areAllDone()) {
 				Collections.sort(players, new ChromosomeComparator());
-				System.out.println(players.get(0).getScore());
-				System.out.println(players.get(0).genes.toString());
+				resetChromosomeValues(players);
+				best = players.get(0);
 				lastRound = false;
+				setEvolving(false);
 			}
 		}
-		
+		return players.get(0);
+	}
+	
+	private void resetChromosomeValues(ArrayList<Chromosome> current){
+		for (Chromosome chromosome : current) {
+			chromosome.resetValues();
+		}
+	}
+
+	public synchronized boolean isEvolving() {
+		return isEvolving;
+	}
+
+	public void setEvolving(boolean done) {
+		this.isEvolving = done;
 	}
 
 	/**
@@ -228,5 +245,10 @@ public class Central extends Thread {
 	public void botonExperimentoSimple() {
 		experimento = new SingleExperiment();
 		Gene gen = new Gene(new Randomizer());
+	}
+
+	public Chromosome getBest() {
+		// TODO Auto-generated method stub
+		return best;
 	}
 }
