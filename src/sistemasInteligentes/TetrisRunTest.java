@@ -5,6 +5,8 @@ import java.util.Random;
 
 import sistemasInteligentes.ai.Central;
 import sistemasInteligentes.ai.Chromosome;
+import sistemasInteligentes.ai.Common;
+import sistemasInteligentes.ai.Gene;
 import tetris.gui.ImageLoader;
 import tetris.gui.Images;
 import tetris.gui.Randomizer;
@@ -23,23 +25,28 @@ public class TetrisRunTest extends Thread {
 	boolean play;
 	PlayFieldEvaluator pfe;
 	Random rnd = new Random();
+        private Common common;
 
 	public void playGod() {
 		while (central.isEvolving()) {
 			central.evolve();
 		}
-		
-	}
-
-	public void setFirstPlayer(Chromosome cr) {
+        }
+        
+        public void setFirstPlayer(Chromosome cr) {
 		this.cr = cr;
 	}
 
-	public void launch() throws Throwable {
+        
+//        public void launch() throws Throwable {
+//		createTetrisFrame(ImageLoader.loadImages());
+//		playGod();
+//		setFirstPlayer(central.getBest());
+//
+//		run();
+	public void launch(Chromosome cr) throws Throwable {
 		createTetrisFrame(ImageLoader.loadImages());
-		playGod();
-		setFirstPlayer(central.getBest());
-
+                setFirstPlayer(cr);
 		run();
 	}
 
@@ -119,7 +126,7 @@ public class TetrisRunTest extends Thread {
 		stepCount++;
 		tetris.ai.State state = cr.ai.search(cr.pfe.currentPF, cr.tetriminos);
 		if (state == null) {
-			System.out.println("PERDIÓ \n \n" + "Score: " + cr.getScore());
+			System.out.println("PERDIï¿½ \n \n" + "Score: " + cr.getScore());
 			return -1;
 		}
 		tetrisFrame.lockTetrimino(cr.tetriminos[0], state.rotation, state.x,

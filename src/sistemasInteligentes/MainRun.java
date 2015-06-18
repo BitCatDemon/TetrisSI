@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package sistemasInteligentes;
 
+import sistemasInteligentes.gui.EvolveFrame;
 
-public class MainRun{
-	
-	public TetrisSI tetrisSI;
+public class MainRun {
 
-	public static void main(String... args) throws Throwable {
-		new TetrisRunTest().launch();
-	}
+    public Genetris tetrisSI;
+
+    public static void main(String... args) throws Throwable {
+        new Genetris();
+    }
 }

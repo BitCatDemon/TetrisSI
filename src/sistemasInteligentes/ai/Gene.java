@@ -17,7 +17,7 @@ public class Gene {
 		for (int i = 0; i < genes.length; i++) {
 			genes[i] = randomizer.getRndGeneValue();
 		}
-		// ACÁ HABRÍA QUE GENERAR VALORES PARA CADA GEN.
+		// ACï¿½ HABRï¿½A QUE GENERAR VALORES PARA CADA GEN.
 	}
 
 	public Gene(double[] genes) {
@@ -45,4 +45,15 @@ public class Gene {
 				+ "," + genes[3] + "," + genes[4] + "," + genes[5] + "," +genes[6]+"}";
 		return s;
 	}
+        
+        public String toString2(){
+            String s = genes[HEIGHT]
+                    +"&" + genes[CLEARS]
+                    +"&" + genes[HOLES]
+                    +"&" + genes[BLOCKADES]
+                    +"&" + genes[WALLS]
+                    +"&" + genes[FLOOR]
+                    +"&" + genes[PARTNER];
+            return s;
+        }
 }

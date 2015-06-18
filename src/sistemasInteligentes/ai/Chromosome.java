@@ -11,6 +11,7 @@ public class Chromosome extends Thread {
 	public SIAI ai;
 	Common common;
 	private int score = 0;
+        public int lastScore = 0;
 	Randomizer randomizer;
 
 	public Chromosome(Common common) {
@@ -80,6 +81,7 @@ public class Chromosome extends Thread {
 		pfe = new PlayFieldEvaluator();
 		ai = new SIAI();
 		ai.setGenes(genes.genes);
+                lastScore = score;
 		score = 0;
 	}
 
@@ -87,5 +89,8 @@ public class Chromosome extends Thread {
 	public String toString() {
 		return "Chromosome [score=" + score + "]";
 	}
-
+        
+        public String toString2() {
+		return "Chromosome [score=" + score + "]"+ "Gen "+genes.toString();
+	}
 }
