@@ -11,7 +11,7 @@ public class TetrisFrame extends JFrame {
     imagePane = new ImagePane(images);
     
     setTitle("Tetris");    
-    setDefaultCloseOperation(EXIT_ON_CLOSE);    
+    setDefaultCloseOperation(HIDE_ON_CLOSE);    
     setContentPane(imagePane);
     pack();
     getRootPane().setDoubleBuffered(true);

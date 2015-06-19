@@ -76,6 +76,7 @@ public class GenetrisTest extends javax.swing.JFrame {
         t_genes = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         b_playGene = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,10 +119,17 @@ public class GenetrisTest extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         jLabel1.setText("Genetris-UN");
 
-        b_playGene.setText("Play Gene");
+        b_playGene.setText("Set Gene");
         b_playGene.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 b_playGeneActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Play Gene");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -138,8 +146,10 @@ public class GenetrisTest extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(361, 361, 361))
             .addGroup(layout.createSequentialGroup()
-                .addGap(405, 405, 405)
+                .addGap(353, 353, 353)
                 .addComponent(b_playGene)
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -149,7 +159,9 @@ public class GenetrisTest extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(b_playGene)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(b_playGene)
+                    .addComponent(jButton1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -188,6 +200,10 @@ public class GenetrisTest extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_b_playGeneActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        rt.run();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -225,6 +241,7 @@ public class GenetrisTest extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton b_playGene;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable t_genes;

@@ -2,6 +2,7 @@ package sistemasInteligentes;
 
 import java.awt.EventQueue;
 import java.util.Random;
+import javax.swing.SwingUtilities;
 
 import sistemasInteligentes.ai.Central;
 import sistemasInteligentes.ai.Chromosome;
@@ -47,7 +48,7 @@ public class TetrisRunTest extends Thread {
 	public void launch(Chromosome cr) throws Throwable {
 		createTetrisFrame(ImageLoader.loadImages());
                 setFirstPlayer(cr);
-		run();
+		//run();
 	}
 
 	@Override
@@ -129,6 +130,7 @@ public class TetrisRunTest extends Thread {
 			System.out.println("PERDI� \n \n" + "Score: " + cr.getScore());
 			return -1;
 		}
+                System.out.println(tetrisFrame== null);
 		tetrisFrame.lockTetrimino(cr.tetriminos[0], state.rotation, state.x,
 				state.y, !PLAY_FAST);
 		cr.ai.playfieldUtil.lockTetrimino(cr.pfe.currentPF, cr.tetriminos[0],
@@ -155,14 +157,24 @@ public class TetrisRunTest extends Thread {
 			randomizer.setNextTetriminoType(cr.tetriminos);
 		}
 	}
+        
+        
 
 	private void createTetrisFrame(final Images images) throws Throwable {
-		EventQueue.invokeAndWait(new Runnable() {
-			@Override
-			public void run() {
-				tetrisFrame = new TetrisFrame(images);
-			}
-		});
+            SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                tetrisFrame = new TetrisFrame(images);
+            }
+
+            });
+//		EventQueue.invokeAndWait(new Runnable() {
+//			@Override
+//			public void run() {
+//				tetrisFrame = new TetrisFrame(images);
+//			}
+//		});
 	}
 
 }
