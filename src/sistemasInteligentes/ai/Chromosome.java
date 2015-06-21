@@ -7,7 +7,7 @@ public class Chromosome extends Thread {
 	public PlayFieldEvaluator pfe;
 	public int[] tetriminos;
 	public boolean hasLost = false;
-	private int maxMoves = 75;
+	private int maxMoves = 1500;
 	public SIAI ai;
 	Common common;
 	private int score = 0;
@@ -17,7 +17,7 @@ public class Chromosome extends Thread {
 	public Chromosome(Common common) {
 		this.randomizer = new Randomizer();
 		this.genes = new Gene(randomizer);
-		this.tetriminos = new int[3];
+		this.tetriminos = new int[SIAI.TETRIMINOS_SEARCHED];
 		randomizer.setInitialTetriminoTypes(tetriminos);
 		this.common = common;
 		pfe = new PlayFieldEvaluator();

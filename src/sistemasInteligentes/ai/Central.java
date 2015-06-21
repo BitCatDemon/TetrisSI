@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
+import javax.swing.JProgressBar;
 import sistemasInteligentes.Genetris;
-
-import sistemasInteligentes.SingleExperiment;
 
 public class Central {
 
     ArrayList<Chromosome> players;
-    final int MAX_T = 15;
+    final int MAX_T = 20;
     private int MAX_G = 20;
     final int selection_percentage = 20, mutation_percentage = 30;
     private static Central central;
@@ -21,12 +20,23 @@ public class Central {
     private Random random = new Random();
     private boolean isEvolving = true;
     Chromosome best;
-    SingleExperiment experimento;
     Genetris g;
+    int current_generations;
+    ArrayList<Integer> scores;
+    public Chromosome bestScore;
 
     private Central() {
         players = new ArrayList<>(MAX_T);
         common = Common.getInstance(MAX_T);
+        initializeThreads();
+    }
+    
+    public void resetCentral(){
+        players = new ArrayList<>(MAX_T);
+        common = Common.getInstance(MAX_T);
+        allStarted = false;
+        stop4Starting = true;
+        isEvolving = true;
         initializeThreads();
     }
 
@@ -40,7 +50,7 @@ public class Central {
         }
         return central;
     }
-
+    
     private void initializeThreads() {
         for (int i = 1; i <= MAX_T; i++) {
             players.add(new Chromosome(common));
@@ -52,7 +62,7 @@ public class Central {
             try {
                 players.get(i).start();
             } catch (Exception e) {
-                System.out.println("Se rompi� " + i);
+                System.out.println("Se rompió " + i);
             }
 
         }
@@ -74,7 +84,9 @@ public class Central {
     }
 
     public Chromosome evolve() {
-        int current_generations = 0;
+        bestScore = players.get(0);
+        current_generations = 0;
+        scores = new ArrayList();
         int[] res_selection;
         while (current_generations < MAX_G) {
             if (!allStarted) {
@@ -83,6 +95,8 @@ public class Central {
 
             if (areAllStarted() && common.areAllDone()) {
                 Collections.sort(players, new ChromosomeComparator());
+                if(bestScore.getScore() < players.get(0).getScore())bestScore=players.get(0);
+                scores.add(players.get(0).getScore());
                 res_selection = selection(players);
                 players = crossover(res_selection);
                 mutation(players);
@@ -90,7 +104,7 @@ public class Central {
                 current_generations++;
                 allStarted = false;
                 lastRound = current_generations == MAX_G;
-                g.updateCurrentGeneration(current_generations);
+                final int var = current_generations;
                 System.out.println(current_generations);
             }
         }
@@ -106,6 +120,7 @@ public class Central {
                 setEvolving(false);
             }
         }
+
         return players.get(0);
     }
 
@@ -185,31 +200,39 @@ public class Central {
     }
 
     /**
-     * Se muta un 30% de la poblaci�n de cromosomas seleccionados.
+     * Muta uno o dos genes de la población de cromosomas seleccionados.
      *
      * @param current
      */
     private void mutation(ArrayList<Chromosome> current) {
         int numberOfGenes = Gene.numberOfGenes;
-        int numMutated = (MAX_T * mutation_percentage) / 100;
         int numGenesMutated;
-        int prev, cur = random.nextInt(MAX_T), gene;
-        Chromosome cr;
-        for (int i = 0; i < numMutated; i++) {
-            numGenesMutated = random.nextInt(numberOfGenes);
-            if (numGenesMutated == 0) {
+        int index = random.nextInt(MAX_T);
+        Randomizer randomizer = new Randomizer();
+
+        for (Chromosome chromosome : current) {
+            numGenesMutated = random.nextInt(10);
+            if (numGenesMutated == 9) {
+                numGenesMutated = 2;
+            } else if (numGenesMutated > 0) {
                 numGenesMutated = 1;
+            } else {
+                numGenesMutated = 0;
             }
-            cr = current.get(cur);
-            for (int j = 0; j < numGenesMutated; j++) {
-                gene = random.nextInt(numberOfGenes);
-                cr.genes.genes[gene] += random.nextDouble() / 10;
-            }
-            prev = cur;
-            while (prev == cur) {
-                cur = random.nextInt(MAX_T);
+
+            while (numGenesMutated > 0) {
+                index = random.nextInt(numberOfGenes);
+                double value = randomizer.getRndGeneValue();
+                chromosome.genes.genes[index] += value
+                        / chromosome.genes.genes[index];
+                if (chromosome.genes.genes[index] > 1
+                        || chromosome.genes.genes[index] < -1) {
+                    chromosome.genes.genes[index] = value;
+                }
+                numGenesMutated--;
             }
         }
+
     }
 
     public void copyGenes(double[] destiny, double[] source, int begin, int end) {
@@ -225,7 +248,7 @@ public class Central {
 
         @Override
         public int compare(Chromosome c1, Chromosome c2) {
-			// return c1.getScore() >= c2.getScore() ? c1.getScore() : c2
+            // return c1.getScore() >= c2.getScore() ? c1.getScore() : c2
             // .getScore();
             return c2.getScore() - c1.getScore();
         }
@@ -233,7 +256,8 @@ public class Central {
 
     /**
      * Metodos para la interfaz grafica de Genetris
-     * */
+     *
+     */
     public Chromosome getBest() {
         // TODO Auto-generated method stub
         return best;
@@ -251,4 +275,13 @@ public class Central {
     public void setMAX_G(int MAX_G) {
         this.MAX_G = MAX_G;
     }
+
+    public void setScores(ArrayList<Integer> scores) {
+        this.scores = scores;
+    }
+
+    public ArrayList<Integer> getScores() {
+        return scores;
+    }
+
 }

@@ -5,8 +5,10 @@
  */
 package sistemasInteligentes;
 
+import java.io.IOException;
 import java.util.Random;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import sistemasInteligentes.ai.Central;
 import sistemasInteligentes.ai.Chromosome;
 import sistemasInteligentes.gui.EvolveFrame;
@@ -24,12 +26,10 @@ public class Genetris {
     Randomizer randomizer;
 
     Central central = Central.getInstance();
-    Chromosome cr;
     int stepCount;
-    boolean play;
     PlayFieldEvaluator pfe;
     Random rnd = new Random();
-    EvolveFrame centralFrame;
+    public EvolveFrame centralFrame;
     public Chromosome [] threeBest;
     Writer writer  = new Writer();
 
@@ -39,6 +39,12 @@ public class Genetris {
         centralFrame.setVisible(true);
         central.setCentral(this);
     }
+    
+    public void resetCentral() {
+        central.resetCentral();
+        threeBest = new Chromosome[3];
+    }
+    
     public void playGod() {
         while (central.isEvolving()) {
             central.evolve();
@@ -53,8 +59,11 @@ public class Genetris {
         String genesPrint =threeBest[0].genes.toString2()+"&"+ threeBest[0].lastScore+"&"+ central.getMAX_G()+"\n";
         genesPrint +=threeBest[1].genes.toString2()+"&"+ threeBest[1].lastScore+"&"+ central.getMAX_G()+"\n";
         genesPrint +=threeBest[2].genes.toString2()+"&"+ threeBest[2].lastScore+"&"+ central.getMAX_G()+"\n";
+        genesPrint +=central.bestScore.genes.toString2()+"&"+central.bestScore.getScore()+"&"+central.getMAX_G()+"\n";
         writer.escribir(genesPrint);
-        JOptionPane.showMessageDialog(null, "La evolución a terminado.");
+        JOptionPane.showMessageDialog(null, "La evolución ha terminado.");
+        centralFrame.getEstadisticas(central.getScores());
+        centralFrame.fillTable();
     }
     
     public void al_buttonEvolution(int max_generations) throws Throwable{
@@ -65,7 +74,5 @@ public class Genetris {
     public void updateCurrentGeneration(int i){
         centralFrame.updateCurrentGeneration(i);
     }
-
-
 }
 

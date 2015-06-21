@@ -5,12 +5,25 @@
  */
 package sistemasInteligentes.gui;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 import sistemasInteligentes.Genetris;
 import sistemasInteligentes.MainRun;
 import sistemasInteligentes.TetrisRunTest;
+import sistemasInteligentes.ai.Chromosome;
+import sistemasInteligentes.ai.Common;
+import sistemasInteligentes.ai.Gene;
 
 /**
  *
@@ -18,19 +31,86 @@ import sistemasInteligentes.TetrisRunTest;
  */
 public class EvolveFrame extends javax.swing.JFrame {
 
+    TetrisRunTest trt;
     Genetris rt;
+
+    Writer writer = new Writer();
+    ArrayList<String[]> genes;
+    public ArrayList<Integer> scores;
+
     /**
-     * Creates new form CentralForm
+     * genes = new ArrayList(); Creates new form CentralForm
      */
     public EvolveFrame(Genetris rt) {
         this.rt = rt;
+        trt = new TetrisRunTest();
         initComponents();
+        fillTable();
     }
-    
+
+    public void getEstadisticas(ArrayList<Integer> array) throws IOException {
+        DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+        System.out.println("score"+array.size());
+        for (int i = 0; i < array.size(); i++) {
+            System.out.println("score: "+i+" : "+array.get(i));
+            line_chart_dataset.addValue(array.get(i), "score", i + "");
+        }
+
+        JFreeChart chart = ChartFactory.createLineChart("",
+                "Generaciones", "Score", line_chart_dataset, PlotOrientation.VERTICAL,
+                true, true, false);
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setSize(469, 137);
+        p_estadisticas.add(chartPanel);
+        p_estadisticas.setVisible(true);
+        ChartUtilities.saveChartAsJPEG(new File("grafico.jpg"), chart, 500, 500);
+    }
+
+    public void getGenes() {
+        genes = new ArrayList();
+        String s = writer.leer();
+        String[] genesArray = s.split("#");
+
+        for (int i = 0; i < genesArray.length; i++) {
+            //System.out.println(genesArray[i]);
+            String[] curr = genesArray[i].split("&");
+            genes.add(curr);
+        }
+
+    }
+
+    private void clear_table() {
+        for (int i = 0; i < t_genes.getRowCount(); i++) {
+            ((DefaultTableModel) t_genes.getModel()).removeRow(i);
+            i -= 1;
+        }
+    }
+
+    public void fillTable() {
+        getGenes();
+        if (genes.size() > 1) {
+            clear_table();
+            DefaultTableModel modeloDeMiTabla = (DefaultTableModel) t_genes.getModel();
+            for (int i = 0; i < genes.size(); i++) {
+                modeloDeMiTabla.addRow(new Object[genes.size()]);
+                t_genes.setValueAt(genes.get(i)[0], i, 0);
+                t_genes.setValueAt(genes.get(i)[1], i, 1);
+                t_genes.setValueAt(genes.get(i)[2], i, 2);
+                t_genes.setValueAt(genes.get(i)[3], i, 3);
+                t_genes.setValueAt(genes.get(i)[4], i, 4);
+                t_genes.setValueAt(genes.get(i)[5], i, 5);
+                t_genes.setValueAt(genes.get(i)[6], i, 6);
+                t_genes.setValueAt(genes.get(i)[7], i, 7);
+                t_genes.setValueAt(genes.get(i)[8], i, 8);
+            }
+        }
+    }
+
     //    Metodos para actualizar la interfaz grafica
-    public void updateCurrentGeneration(int generation){
-        this.tf_progress.setText(generation+"");
+    public void updateCurrentGeneration(int generation) {
+        //this.tf_progress.setText(generation+"");
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,23 +121,18 @@ public class EvolveFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        tf_progress = new javax.swing.JTextField();
         button_evolution = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         tf_generations = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        b_reset = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        t_genes = new javax.swing.JTable();
+        b_setGene = new javax.swing.JButton();
+        p_estadisticas = new javax.swing.JPanel();
+        b_playGene = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        tf_progress.setColumns(1);
-        tf_progress.setFont(new java.awt.Font("Tahoma", 0, 50)); // NOI18N
-        tf_progress.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        tf_progress.setText("0");
-        tf_progress.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tf_progressActionPerformed(evt);
-            }
-        });
 
         button_evolution.setText("Evolve");
         button_evolution.addActionListener(new java.awt.event.ActionListener() {
@@ -78,6 +153,13 @@ public class EvolveFrame extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel3.setText("Genetris-UN");
 
+        b_reset.setText("Reset");
+        b_reset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_resetActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -86,18 +168,18 @@ public class EvolveFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 3, Short.MAX_VALUE)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(tf_generations, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(13, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(b_reset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(button_evolution, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3)
-                                .addGap(0, 10, Short.MAX_VALUE))
-                            .addComponent(tf_progress))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
@@ -112,38 +194,108 @@ public class EvolveFrame extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(tf_generations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tf_progress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(b_reset)
+                .addGap(14, 14, 14))
         );
+
+        t_genes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "HEIGHT", "CLEARS", "HOLES", "BLOCKADES", "WALLS", "FLOOR", "PARTNER", "SCORE", "GENERATIONS"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(t_genes);
+
+        b_setGene.setText("Set Gene");
+        b_setGene.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_setGeneActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout p_estadisticasLayout = new javax.swing.GroupLayout(p_estadisticas);
+        p_estadisticas.setLayout(p_estadisticasLayout);
+        p_estadisticasLayout.setHorizontalGroup(
+            p_estadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 469, Short.MAX_VALUE)
+        );
+        p_estadisticasLayout.setVerticalGroup(
+            p_estadisticasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 137, Short.MAX_VALUE)
+        );
+
+        b_playGene.setText("Play Gene");
+        b_playGene.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_playGeneActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(p_estadisticas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(b_setGene, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(b_playGene, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(4, 4, 4))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(b_setGene, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(b_playGene, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(p_estadisticas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(8, 8, 8)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tf_progressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_progressActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tf_progressActionPerformed
-
     private void tf_generationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_generationsActionPerformed
-        
+
     }//GEN-LAST:event_tf_generationsActionPerformed
 
     private void button_evolutionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_evolutionActionPerformed
-        if(this.tf_generations != null){
+        if (this.tf_generations != null) {
             try {
+                scores = new ArrayList<>();
                 rt.al_buttonEvolution(Integer.parseInt(this.tf_generations.getText()));
             } catch (Throwable ex) {
                 System.out.println(ex.toString());
@@ -151,13 +303,58 @@ public class EvolveFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_evolutionActionPerformed
 
+    private void b_setGeneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_setGeneActionPerformed
+        double gen[] = new double[7];
+        if (t_genes.getSelectedRow() >= 0) {
+            String[] datosLeidos
+                    = {
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 0)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 1)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 2)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 3)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 4)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 5)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 6)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 7)),
+                        String.valueOf(t_genes.getValueAt(t_genes.getSelectedRow(), 8)),};
+            for (int i = 0; i < 7; i++) {
+                gen[i] = Double.parseDouble(datosLeidos[i]);
+            }
+            Common common = Common.getInstance(1);
+            Chromosome cr = new Chromosome(common);
+            Gene tgen = new Gene(gen);
+            cr.genes = tgen;
+
+            try {
+                trt.launch(cr);
+            } catch (Throwable ex) {
+                Logger.getLogger(EvolveFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un registro");
+        }
+    }//GEN-LAST:event_b_setGeneActionPerformed
+
+    private void b_playGeneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_playGeneActionPerformed
+        trt.run();
+    }//GEN-LAST:event_b_playGeneActionPerformed
+
+    private void b_resetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_resetActionPerformed
+        rt.resetCentral();
+    }//GEN-LAST:event_b_resetActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton b_playGene;
+    private javax.swing.JButton b_reset;
+    private javax.swing.JButton b_setGene;
     private javax.swing.JButton button_evolution;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel p_estadisticas;
+    private javax.swing.JTable t_genes;
     private javax.swing.JTextField tf_generations;
-    private javax.swing.JTextField tf_progress;
     // End of variables declaration//GEN-END:variables
 }
